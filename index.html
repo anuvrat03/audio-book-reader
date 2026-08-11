@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>My Mobile Audiobook Reader</title>
@@ -17,14 +17,14 @@
 
   <h2>My Audiobook Reader</h2>
   
-  <!-- Box where you paste Hindi text -->
-  <textarea id="documentText" placeholder="यहाँ अपना हिंदी टेक्स्ट पेस्ट करें..."></textarea>
+  <!-- The box placeholder is now set back to plain English -->
+  <textarea id="documentText" placeholder="Paste your document text here..."></textarea>
 
-  <!-- Dropdown to select voices -->
+  <!-- Dropdown to choose any available voice (including Hindi) -->
   <label for="voiceSelect"><strong>Choose Voice:</strong></label>
   <select id="voiceSelect"></select>
 
-  <!-- Pitch selector to change between Deeper (Male style) and Higher (Female style) -->
+  <!-- Pitch selector to adjust tone -->
   <label for="pitchSelect"><strong>Voice Pitch:</strong></label>
   <select id="pitchSelect">
     <option value="1">Default Pitch</option>
@@ -43,27 +43,20 @@
     let voiceSelect = document.getElementById("voiceSelect");
     let pitchSelect = document.getElementById("pitchSelect");
 
-    // Load voices into the dropdown box
+    // Load available voices from phone engine into the dropdown menu
     function loadVoices() {
       voices = window.speechSynthesis.getVoices();
       voiceSelect.innerHTML = '';
 
-      // Loop through all voices installed on phone
+      // Populate dropdown with all available system voices
       voices.forEach((voice, index) => {
         let option = document.createElement('option');
         option.value = index;
         option.textContent = `${voice.name} (${voice.lang})`;
-        
-        // Auto-select Hindi if found
-        if (voice.lang.includes('hi') || voice.name.toLowerCase().includes('hindi')) {
-          option.selected = true;
-        }
-        
         voiceSelect.appendChild(option);
       });
     }
 
-    // Force voice reloading on mobile browsers
     loadVoices();
     if (speechSynthesis.onvoiceschanged !== undefined) {
       speechSynthesis.onvoiceschanged = loadVoices;
@@ -79,7 +72,6 @@
       window.speechSynthesis.cancel();
       
       speech.text = text;
-      speech.lang = 'hi-IN'; // Force Hindi language code
       
       let selectedIndex = voiceSelect.value;
       if (voices[selectedIndex]) {
