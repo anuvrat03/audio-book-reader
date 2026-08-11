@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>My Mobile Audiobook Reader</title>
   <style>
-    /* Keeps design clean on phone screens */
+    /* Keeps design clean on mobile screens */
     body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
     textarea { width: 100%; height: 180px; font-size: 16px; margin-bottom: 15px; }
     select { width: 100%; padding: 12px; font-size: 16px; margin-bottom: 15px; border-radius: 6px; }
@@ -17,14 +17,14 @@
 
   <h2>My Audiobook Reader</h2>
   
-  <!-- The box placeholder is now set back to plain English -->
+  <!-- Document text input box -->
   <textarea id="documentText" placeholder="Paste your document text here..."></textarea>
 
-  <!-- Dropdown to choose any available voice (including Hindi) -->
+  <!-- Voice selection dropdown -->
   <label for="voiceSelect"><strong>Choose Voice:</strong></label>
   <select id="voiceSelect"></select>
 
-  <!-- Pitch selector to adjust tone -->
+  <!-- Pitch dropdown -->
   <label for="pitchSelect"><strong>Voice Pitch:</strong></label>
   <select id="pitchSelect">
     <option value="1">Default Pitch</option>
@@ -43,12 +43,11 @@
     let voiceSelect = document.getElementById("voiceSelect");
     let pitchSelect = document.getElementById("pitchSelect");
 
-    // Load available voices from phone engine into the dropdown menu
+    // Function to load all system voices into the dropdown
     function loadVoices() {
       voices = window.speechSynthesis.getVoices();
       voiceSelect.innerHTML = '';
 
-      // Populate dropdown with all available system voices
       voices.forEach((voice, index) => {
         let option = document.createElement('option');
         option.value = index;
@@ -69,13 +68,18 @@
         return;
       }
       
+      // Stop any voice currently speaking
       window.speechSynthesis.cancel();
       
       speech.text = text;
       
       let selectedIndex = voiceSelect.value;
       if (voices[selectedIndex]) {
+        // Assign selected voice to speech engine
         speech.voice = voices[selectedIndex];
+        
+        // FIX: Force language engine to match selected voice language (e.g. en-US or hi-IN)
+        speech.lang = voices[selectedIndex].lang;
       }
       
       speech.pitch = parseFloat(pitchSelect.value);
