@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Mobile Audiobook Reader</title>
+  <style>
+    /* Makes the screen look clean on a mobile screen */
+    body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
+    /* Styles the text area where you paste your document text */
+    textarea { width: 100%; height: 200px; font-size: 16px; margin-bottom: 15px; }
+    /* Makes the Play and Stop buttons big and easy to tap on your Samsung screen */
+    button { padding: 15px 25px; font-size: 18px; margin-right: 10px; border-radius: 8px; border: none; }
+    .play-btn { background-color: #28a745; color: white; }
+    .stop-btn { background-color: #dc3545; color: white; }
+  </style>
+</head>
+<body>
+
+  <h2>My Audiobook Reader</h2>
+  
+  <!-- Text area where you paste or type your document text -->
+  <textarea id="documentText" placeholder="Paste your document text here..."></textarea>
+  
+  <br>
+  
+  <!-- Tap this button to start reading out loud -->
+  <button class="play-btn" onclick="startReading()">Play</button>
+  
+  <!-- Tap this button to stop reading immediately -->
+  <button class="stop-btn" onclick="stopReading()">Stop</button>
+
+  <script>
+    // This creates a link to your phone's built-in voice system
+    let speech = new SpeechSynthesisUtterance();
+
+    // Function that runs when you tap the green Play button
+    function startReading() {
+      // Gets the text you pasted in the box
+      let text = document.getElementById("documentText").value;
+      
+      // Checks if the text box is empty
+      if (text.trim() === "") {
+        alert("Please paste some text first!");
+        return;
+      }
+      
+      // Assigns your text to the phone's voice engine
+      speech.text = text;
+      
+      // Tells your phone to start speaking the text
+      window.speechSynthesis.speak(speech);
+    }
+
+    // Function that runs when you tap the red Stop button
+    function stopReading() {
+      // Instantly cancels any ongoing voice speech
+      window.speechSynthesis.cancel();
+    }
+  </script>
+
+</body>
+</html>
