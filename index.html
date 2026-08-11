@@ -3,16 +3,16 @@
 <head>
   <title>My Mobile Audiobook Reader</title>
   <style>
-    /* Keeps the app clean and easy to read on your mobile screen */
+    /* Makes the screen clean and readable on mobile */
     body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
     
-    /* Styles the document text area */
+    /* Input box for text */
     textarea { width: 100%; height: 180px; font-size: 16px; margin-bottom: 15px; }
     
-    /* Styles the voice dropdown menu */
+    /* Dropdown menus for selecting voice options */
     select { width: 100%; padding: 12px; font-size: 16px; margin-bottom: 15px; border-radius: 6px; }
     
-    /* Large buttons made easy to tap on your Samsung phone */
+    /* Action buttons */
     button { padding: 15px 25px; font-size: 18px; margin-right: 10px; border-radius: 8px; border: none; }
     .play-btn { background-color: #28a745; color: white; }
     .stop-btn { background-color: #dc3545; color: white; }
@@ -20,49 +20,62 @@
 </head>
 <body>
 
-  <h2>My Audiobook Reader</h2>
+  <h2>My Audiobook Reader (Hindi Supported)</h2>
   
-  <!-- Text area for pasting document text -->
-  <textarea id="documentText" placeholder="Paste your document text here..."></textarea>
+  <!-- Text area where you paste your Hindi text -->
+  <textarea id="documentText" placeholder="यहाँ अपना हिंदी टेक्स्ट पेस्ट करें... (Paste your Hindi text here)"></textarea>
 
-  <!-- Dropdown menu to choose different voices -->
-  <label for="voiceSelect"><strong>Choose Voice:</strong></label>
+  <!-- Dropdown to select available Hindi / Indian voices on your phone -->
+  <label for="voiceSelect"><strong>Select Hindi / Local Voice:</strong></label>
   <select id="voiceSelect"></select>
-  
+
+  <!-- Pitch dropdown to help adjust tone between higher (Female) and deeper (Male) -->
+  <label for="pitchSelect"><strong>Voice Tone (Pitch):</strong></label>
+  <select id="pitchSelect">
+    <option value="1">Normal Tone</option>
+    <option value="1.3">Higher Pitch (Female / Light Voice)</option>
+    <option value="0.7">Deeper Pitch (Male / Deep Voice)</option>
+  </select>
+
   <br><br>
   
-  <!-- Play and Stop buttons -->
+  <!-- Buttons to control playback -->
   <button class="play-btn" onclick="startReading()">Play</button>
   <button class="stop-btn" onclick="stopReading()">Stop</button>
 
   <script>
-    // Create connection to your phone's speech engine
+    // Connects to phone's speech engine
     let speech = new SpeechSynthesisUtterance();
     let voices = [];
     let voiceSelect = document.getElementById("voiceSelect");
+    let pitchSelect = document.getElementById("pitchSelect");
 
-    // Function to load all available voices from your phone into the dropdown menu
+    // Load available voices from device and filter for Hindi (hi-IN) or Indian English
     function loadVoices() {
-      // Fetch available voices from your device
       voices = window.speechSynthesis.getVoices();
       voiceSelect.innerHTML = '';
 
-      // Loop through each voice and add it as an option in the menu
-      voices.forEach((voice, i) => {
+      // Filter specifically for Hindi or Indian accents available on phone
+      let hindiVoices = voices.filter(v => v.lang.includes('hi') || v.lang.includes('IN'));
+
+      // If no specific Hindi voice is found, show all available device voices
+      let displayList = hindiVoices.length > 0 ? hindiVoices : voices;
+
+      displayList.forEach((voice) => {
         let option = document.createElement('option');
-        option.value = i;
+        option.value = voice.name;
         option.textContent = `${voice.name} (${voice.lang})`;
         voiceSelect.appendChild(option);
       });
     }
 
-    // Load voices immediately and whenever phone voice list updates
+    // Trigger voice loader
     loadVoices();
     if (speechSynthesis.onvoiceschanged !== undefined) {
       speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // Function that runs when you tap the green Play button
+    // Play action
     function startReading() {
       let text = document.getElementById("documentText").value;
       
@@ -71,23 +84,22 @@
         return;
       }
       
-      // Stop any current reading before starting
       window.speechSynthesis.cancel();
       
-      // Assign text to speech engine
       speech.text = text;
       
-      // Set chosen voice from the dropdown menu
-      let selectedVoiceIndex = voiceSelect.value;
-      if (voices[selectedVoiceIndex]) {
-        speech.voice = voices[selectedVoiceIndex];
-      }
+      // Assign selected voice from dropdown
+      let selectedVoiceName = voiceSelect.value;
+      speech.voice = voices.find(v => v.name === selectedVoiceName);
       
-      // Speak the text out loud
+      // Set pitch adjustment selected by user
+      speech.pitch = parseFloat(pitchSelect.value);
+      
+      // Speak text
       window.speechSynthesis.speak(speech);
     }
 
-    // Function that runs when you tap the red Stop button
+    // Stop action
     function stopReading() {
       window.speechSynthesis.cancel();
     }
